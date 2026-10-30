@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveBite — Surplus Food Marketplace (All 23 GoF Design Patterns)</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥗</text></svg>">
+</head>
+<body>
+
+  <!-- Global Header Navigation -->
+  <header class="header-nav">
+    <div class="header-container">
+      <div class="logo-container" data-nav="landing">
+        <span>🥗</span>
+        <span>SaveBite</span>
+      </div>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a class="nav-link active" data-nav="landing">Problem & Solution</a></li>
+          <li><a class="nav-link" data-nav="browse">Browse Surplus</a></li>
+          <li><a class="nav-link" data-nav="orders">My Orders</a></li>
+          <li><a class="nav-link" data-nav="seller" id="nav-seller" style="display:none;">Seller Hub</a></li>
+          <li><a class="nav-link" data-nav="admin" id="nav-admin" style="display:none;">Admin</a></li>
+          <li><a class="nav-link" data-nav="profile">Profile</a></li>
+          <li><a class="nav-link" data-nav="explorer">Pattern Explorer</a></li>
+          <li><a class="nav-link" data-nav="about">About</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Teaching Mode Switch -->
+        <div class="teaching-toggle-wrap">
+          <span>Teaching Mode</span>
+          <label class="switch">
+            <input type="checkbox" id="teaching-mode-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Light / Dark Theme Button (Abstract Factory) -->
+        <button class="btn btn-sm btn-secondary" id="theme-toggle-btn">🌙 Dark</button>
+
+        <!-- Cart Button (Command & Observer) -->
+        <button class="btn btn-sm btn-secondary" id="open-cart-btn" style="position:relative;">
+          🛒 Cart
+          <span id="cart-badge" class="badge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;padding:2px 6px;font-size:0.7rem;">0</span>
+        </button>
+
+        <!-- Auth Status Container -->
+        <div id="header-auth-container">
+          <button class="btn btn-sm btn-primary" id="open-login-btn">Login / Register</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Auto-dismissing Inline Hints Container -->
+  <div id="inline-hints-container" style="position:fixed;top:70px;right:20px;z-index:95;max-width:380px;"></div>
+
+  <!-- Main View Router -->
+  <main class="main-container">
+
+    <!-- ==========================================
+         PAGE 1: LANDING & PROBLEM / SOLUTION
+         ========================================== -->
+    <section id="page-landing" class="page-view">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <span class="hero-badge">🌱 Zero Waste Surplus Marketplace</span>
+          <h1 class="hero-title">Good edible food shouldn't become garbage.</h1>
+          <p class="hero-subtitle">
+            <b>The Problem:</b> Bakeries, restaurants, and grocery shops bin fresh, edible food at closing time while everyday people pay full price elsewhere. This wastes food, money, and carbon emissions.
+          </p>
+          <p class="hero-subtitle">
+            <b>The Solution:</b> A hyper-local marketplace where sellers list near-expiry surplus food, discounts rise automatically as closing approaches, customers reserve bites in evening pickup slots, and live impact is tracked.
+          </p>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+            <button class="btn btn-primary" style="background:#ffffff;color:#15803d;font-weight:bold;" data-nav="browse">Browse Surplus Food Now</button>
+            <button class="btn btn-outline" style="border-color:#ffffff;color:#ffffff;" data-nav="explorer">Explore All 23 GoF Patterns</button>
+            <button class="pattern-btn" onclick="window.SaveBite.openPattern('visitor')">💡 How does Visitor compute impact?</button>
+          </div>
+
+          <!-- Live Impact Stats (Visitor Pattern) -->
+          <div class="hero-stats-grid">
+            <div class="hero-stat-card">
+              <span class="hero-stat-value" id="stat-kg">18.5</span>
+              <span class="hero-stat-label">kg Food Rescued</span>
+            </div>
+            <div class="hero-stat-card">
+              <span class="hero-stat-value" id="stat-rupees">₹1,250</span>
+              <span class="hero-stat-label">Money Saved by Shoppers</span>
+            </div>
+            <div class="hero-stat-card">
+              <span class="hero-stat-value" id="stat-co2">46.2</span>
+              <span class="hero-stat-label">kg CO₂ Emissions Avoided</span>
+            </div>
+            <div class="hero-stat-card">
+              <span class="hero-stat-value" id="stat-meals">42</span>
+              <span class="hero-stat-label">Surplus Meals Rescued</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem & Solution Visual Deep Dive -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;margin-bottom:2.5rem;">
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-sm);">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">🛑 The Food Waste Problem</div>
+          <p style="color:var(--text-secondary);margin-bottom:1rem;">
+            Over 40% of commercially prepared baked items and restaurant portions are discarded daily purely due to store closing hours, despite being fully edible and hygienic.
+          </p>
+          <button class="pattern-btn" onclick="window.SaveBite.openPattern('strategy')">💡 How does Strategy solve dynamic markdown?</button>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-sm);">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">✨ The SaveBite Architecture</div>
+          <p style="color:var(--text-secondary);margin-bottom:1rem;">
+            Every single feature is backed by a Gang-of-Four design pattern running in native Java: Strategy for pricing, Observer for alerts, Mediator for checkout cascades, and Visitor for eco metrics.
+          </p>
+          <button class="pattern-btn" onclick="window.SaveBite.openPattern('facade')">💡 How does Facade orchestrate checkout?</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 2: BROWSE SURPLUS FOOD
+         ========================================== -->
+    <section id="page-browse" class="page-view" style="display:none;">
+      <div class="search-filter-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+          <h2 style="font-size:1.35rem;font-weight:800;">Browse Near-Expiry Surplus Food</h2>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="pattern-btn" onclick="window.SaveBite.openPattern('interpreter')">💡 How does Interpreter parse search?</button>
+            <button class="pattern-btn" onclick="window.SaveBite.openPattern('proxy')">💡 How does Proxy cache listings?</button>
+          </div>
+        </div>
+
+        <!-- Search Bar with Query Mini-Language -->
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-query-input" class="search-input" placeholder="Try mini-language: price<100 AND category:bakery OR expiry<=2h">
+          </div>
+          <select id="sort-select" style="padding:0.75rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);font-weight:600;">
+            <option value="expiry">Sort: Expiry Soonest (Strategy)</option>
+            <option value="price_asc">Sort: Price Low to High</option>
+            <option value="price_desc">Sort: Price High to Low</option>
+            <option value="weight">Sort: Heaviest Weight First</option>
+          </select>
+          <button class="btn btn-primary" id="search-exec-btn">Search</button>
+        </div>
+
+        <div class="syntax-hints">
+          Query Syntax Examples: 
+          <span class="syntax-badge" onclick="document.getElementById('search-query-input').value='price<100 AND category:bakery';document.getElementById('search-exec-btn').click();">price&lt;100 AND category:bakery</span>
+          <span class="syntax-badge" onclick="document.getElementById('search-query-input').value='expiry<=2h';document.getElementById('search-exec-btn').click();">expiry&lt;=2h</span>
+          <span class="syntax-badge" onclick="document.getElementById('search-query-input').value='category:dairy OR category:prepared';document.getElementById('search-exec-btn').click();">category:dairy OR category:prepared</span>
+        </div>
+
+        <!-- Category Pills (Composite Pattern) -->
+        <div class="category-pills" id="category-pills-list">
+          <button class="pill active" data-cat="all">All Departments</button>
+          <button class="pill" data-cat="bakery">Bakery & Breads</button>
+          <button class="pill" data-cat="dairy">Dairy & Parfaits</button>
+          <button class="pill" data-cat="prepared">Chef Prepared Meals</button>
+          <button class="pill" data-cat="beverages">Cold Pressed Juices</button>
+          <button class="pill" data-cat="dessert">Pastries & Desserts</button>
+          <button class="pattern-btn" style="align-self:center;" onclick="window.SaveBite.openPattern('composite')">💡 How does Composite group categories?</button>
+        </div>
+      </div>
+
+      <!-- Listings Grid (Flyweight, State, Proxy) -->
+      <div class="listings-grid" id="listings-container"></div>
+
+      <!-- Pagination (Iterator Pattern) -->
+      <div id="pagination-container"></div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 3: MY ORDERS & REORDER
+         ========================================== -->
+    <section id="page-orders" class="page-view" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:800;">My Food Rescue Orders</h2>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">View past orders and repeat them with 1-click using Prototype deep cloning.</p>
+        </div>
+        <button class="pattern-btn" onclick="window.SaveBite.openPattern('prototype')">💡 How does Prototype clone orders?</button>
+      </div>
+
+      <div id="orders-container"></div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 4: SELLER DASHBOARD
+         ========================================== -->
+    <section id="page-seller" class="page-view" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:800;">Seller Surplus Management Hub</h2>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">List surplus food, export sales reports via Bridge, and manage collections.</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="pattern-btn" onclick="window.SaveBite.openPattern('builder')">💡 How does Builder assemble listings?</button>
+          <button class="pattern-btn" onclick="window.SaveBite.openPattern('bridge')">💡 How does Bridge export reports?</button>
+        </div>
+      </div>
+
+      <!-- Report Export Bar (Bridge Pattern) -->
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+        <div>
+          <b>📊 Export Sales & Rescue Report (Bridge Pattern)</b>
+          <div style="font-size:0.82rem;color:var(--text-muted);">Decouples SalesReport abstraction from Exporter format implementations.</div>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <a class="btn btn-sm btn-secondary" href="/api/seller/reports/sales?format=html" target="_blank">🌐 View HTML</a>
+          <a class="btn btn-sm btn-secondary" href="/api/seller/reports/sales?format=csv" target="_blank">📄 Download CSV</a>
+          <a class="btn btn-sm btn-secondary" href="/api/seller/reports/sales?format=pdf" target="_blank">📜 View ASCII PDF</a>
+        </div>
+      </div>
+
+      <!-- Create New Listing (Builder Pattern) -->
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:2rem;box-shadow:var(--shadow-sm);">
+        <h3 style="font-size:1.2rem;margin-bottom:1rem;color:var(--primary);">➕ List Today's Near-Expiry Surplus Food</h3>
+        <form id="new-listing-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Food Title *</label>
+            <input type="text" id="nl-title" required class="search-input" style="padding:0.5rem;" placeholder="e.g. Sourdough Loaf">
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Category</label>
+            <select id="nl-cat" style="width:100%;padding:0.55rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);">
+              <option value="bakery">Bakery</option>
+              <option value="dairy">Dairy</option>
+              <option value="prepared">Prepared Meals</option>
+              <option value="beverages">Beverages</option>
+              <option value="dessert">Dessert</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Original Price (₹) *</label>
+            <input type="number" id="nl-orig-price" required class="search-input" style="padding:0.5rem;" placeholder="180">
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Current Surplus Price (₹)</label>
+            <input type="number" id="nl-cur-price" class="search-input" style="padding:0.5rem;" placeholder="90">
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Quantity Units</label>
+            <input type="number" id="nl-qty" value="5" class="search-input" style="padding:0.5rem;">
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Estimated Weight (kg)</label>
+            <input type="number" step="0.05" id="nl-weight" value="0.5" class="search-input" style="padding:0.5rem;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:0.85rem;font-weight:bold;">Description</label>
+            <textarea id="nl-desc" class="search-input" style="padding:0.5rem;width:100%;height:60px;" placeholder="Details on preparation, allergens, and closing batch..."></textarea>
+          </div>
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end;">
+            <button type="submit" class="btn btn-primary">Construct Listing with Builder</button>
+          </div>
+        </form>
+      </div>
+
+      <h3 style="font-size:1.2rem;margin-bottom:0.75rem;">Your Active Listings</h3>
+      <div id="seller-listings-container"></div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 5: ADMIN CONSOLE
+         ========================================== -->
+    <section id="page-admin" class="page-view" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:800;">Platform Administration</h2>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">Protected by Protection Proxy (RBAC) and Audit Logging.</p>
+        </div>
+        <button class="pattern-btn" onclick="window.SaveBite.openPattern('proxy')">💡 How does Protection Proxy enforce RBAC?</button>
+      </div>
+
+      <!-- Global Environmental Impact Export (Bridge) -->
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+        <div>
+          <b>🌍 Export Global Environmental Impact Report (Bridge Pattern)</b>
+          <div style="font-size:0.82rem;color:var(--text-muted);">Decouples ImpactReport from PDF/CSV/HTML output formats.</div>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <a class="btn btn-sm btn-secondary" href="/api/admin/impact?format=html" target="_blank">🌐 View HTML</a>
+          <a class="btn btn-sm btn-secondary" href="/api/admin/impact?format=csv" target="_blank">📄 Download CSV</a>
+          <a class="btn btn-sm btn-secondary" href="/api/admin/impact?format=pdf" target="_blank">📜 View ASCII PDF</a>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm);margin-bottom:2rem;">
+        <h3 style="font-size:1.15rem;margin-bottom:1rem;">Registered User Accounts</h3>
+        <div id="admin-users-table" style="overflow-x:auto;"></div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 6: PROFILE & MEMENTO DRAFTS
+         ========================================== -->
+    <section id="page-profile" class="page-view" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:800;">User Profile & Settings</h2>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">Profile draft auto-saving and snapshot checkpoints via the Memento Pattern.</p>
+        </div>
+        <button class="pattern-btn" onclick="window.SaveBite.openPattern('memento')">💡 How does Memento restore drafts?</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;">
+        <!-- Editor (Originator) -->
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm);">
+          <h3 style="font-size:1.15rem;margin-bottom:1rem;color:var(--primary);">Active Profile Editor (Originator)</h3>
+          <form id="profile-editor-form" style="display:flex;flex-direction:column;gap:1rem;">
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Full Name</label>
+              <input type="text" id="profile-name" class="search-input" style="padding:0.6rem;">
+            </div>
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Phone Number</label>
+              <input type="text" id="profile-phone" class="search-input" style="padding:0.6rem;">
+            </div>
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Delivery / Pickup Address</label>
+              <input type="text" id="profile-address" class="search-input" style="padding:0.6rem;">
+            </div>
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Dietary Preference</label>
+              <select id="profile-dietary" style="width:100%;padding:0.6rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);">
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Non-Vegetarian">Non-Vegetarian</option>
+                <option value="Halal">Halal</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <input type="checkbox" id="profile-sms" checked>
+              <label for="profile-sms" style="font-size:0.85rem;font-weight:600;">Enable SMS alerts for near-expiry flash sales</label>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+              <button type="submit" class="btn btn-primary" style="flex:1;">Save Profile Changes</button>
+              <button type="button" class="btn btn-secondary" id="create-snapshot-btn">📸 Save Checkpoint</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Checkpoint History (Caretaker) -->
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm);">
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Snapshot History (Caretaker)</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">Memento snapshots captured before edits or on manual save. Click restore to revert state:</p>
+          <div id="profile-snapshots-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 7: PATTERN EXPLORER
+         ========================================== -->
+    <section id="page-explorer" class="page-view" style="display:none;">
+      <div style="margin-bottom:2rem;">
+        <h2 style="font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">GoF Design Pattern Explorer</h2>
+        <p style="color:var(--text-secondary);margin-bottom:1rem;">
+          All 23 Gang of Four patterns implemented in realistic surplus food marketplace features.
+        </p>
+        
+        <!-- Progress Tracker -->
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem 1.25rem;box-shadow:var(--shadow-sm);">
+          <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:0.9rem;margin-bottom:0.5rem;">
+            <span>Interactive Learning Progress</span>
+            <span id="explored-count" style="color:var(--primary);">0 / 23 patterns explored</span>
+          </div>
+          <div style="height:10px;background:var(--bg-secondary);border-radius:var(--radius-full);overflow:hidden;">
+            <div id="explored-bar" style="height:100%;width:0;background:var(--primary);transition:width 0.4s ease;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 23 Pattern Cards Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;" id="explorer-cards-container"></div>
+    </section>
+
+    <!-- ==========================================
+         PAGE 8: ABOUT THE PROJECT
+         ========================================== -->
+    <section id="page-about" class="page-view" style="display:none;">
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:2.5rem;box-shadow:var(--shadow-sm);max-width:900px;margin:0 auto;">
+        <h1 style="font-size:2.2rem;font-weight:800;color:var(--primary);margin-bottom:1rem;">About SaveBite</h1>
+        <p style="font-size:1.05rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.5rem;">
+          <b>SaveBite</b> is an architectural demonstration of a production-style surplus-food marketplace built in Java 17 and Javalin. It proves that software design patterns are not academic curiosities or whiteboard exercises—they solve tangible, high-impact business problems.
+        </p>
+
+        <h3 style="font-size:1.3rem;margin:1.5rem 0 0.75rem;">Technology Stack</h3>
+        <ul style="padding-left:1.5rem;color:var(--text-secondary);line-height:1.8;">
+          <li><b>Java 17 & Javalin 6:</b> Lightweight, unopinionated web framework keeping patterns visible without heavy annotation magic.</li>
+          <li><b>Security & JWT:</b> JJWT 0.12.x, HMAC-SHA256 signing, BCrypt hashing, HttpOnly SameSite=Strict cookies with token rotation.</li>
+          <li><b>Persistence:</b> Embedded H2 database in file mode via plain JDBC behind Repository interfaces.</li>
+          <li><b>Live SSE Events:</b> Server-Sent Events delivering millisecond pattern execution events to the browser.</li>
+          <li><b>Frontend:</b> Pure vanilla ES Modules and CSS variables—zero build steps, instant browser refresh.</li>
+        </ul>
+
+        <h3 style="font-size:1.3rem;margin:1.5rem 0 0.75rem;">The 23 Design Patterns Distribution</h3>
+        <p style="color:var(--text-secondary);line-height:1.7;">
+          Every single pattern lives in its own dedicated package under <code>com.savebite.patterns</code> with one class per file, annotated with <code>@DesignPattern</code> and synced with <code>patterns.json</code>.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       CART DRAWER (Command Pattern)
+       ========================================== -->
+  <div class="drawer-backdrop" id="cart-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">🛒 Rescue Cart</div>
+      <button class="btn btn-sm btn-secondary" id="close-cart-btn">✕</button>
+    </div>
+
+    <!-- Undo / Redo Command Bar -->
+    <div style="background:var(--bg-secondary);padding:0.6rem 1.25rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);">
+      <div style="display:flex;gap:0.4rem;">
+        <button class="btn btn-sm btn-secondary" id="cart-undo-btn" title="Ctrl+Z">↩ Undo</button>
+        <button class="btn btn-sm btn-secondary" id="cart-redo-btn" title="Ctrl+Y">↪ Redo</button>
+        <button class="btn btn-sm btn-secondary" id="cart-clear-btn" style="color:#ef4444;">Clear</button>
+      </div>
+      <button class="pattern-btn" onclick="window.SaveBite.openPattern('command')">🧩 Command</button>
+    </div>
+
+    <div class="drawer-body" id="cart-items-container"></div>
+
+    <div class="drawer-footer">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;">
+        <span style="font-weight:600;color:var(--text-secondary);">Subtotal:</span>
+        <span id="cart-subtotal" style="font-size:1.5rem;font-weight:800;color:var(--primary);">₹0.00</span>
+      </div>
+      <button class="btn btn-primary" id="proceed-checkout-btn" style="width:100%;padding:0.75rem;" disabled>
+        Proceed to Reserve & Checkout ➔
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==========================================
+       CHECKOUT MODAL (Mediator, Decorator, Template Method, Facade)
+       ========================================== -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-content" style="max-width:650px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem;font-weight:800;">Reserve Surplus Food</h3>
+        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('checkout-modal').classList.remove('open')">✕</button>
+      </div>
+      <form id="checkout-form">
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:1.25rem;">
+          
+          <!-- Cascading Location Form (Mediator Pattern) -->
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+              <span style="font-weight:bold;font-size:0.95rem;">📍 Pickup Location (Mediator Pattern)</span>
+              <button type="button" class="pattern-btn" onclick="window.SaveBite.openPattern('mediator')">🧩 Mediator</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+              <div>
+                <label style="font-size:0.8rem;font-weight:bold;">Country</label>
+                <select id="checkout-country" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);"></select>
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:bold;">State</label>
+                <select id="checkout-state" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);"></select>
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:bold;">City</label>
+                <select id="checkout-city" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);"></select>
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:bold;">Pickup Depot / Hub</label>
+                <select id="checkout-hub" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);"></select>
+              </div>
+            </div>
+            <div style="margin-top:0.75rem;">
+              <label style="font-size:0.8rem;font-weight:bold;">Available Evening Pickup Slot</label>
+              <select id="checkout-slot" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);"></select>
+            </div>
+          </div>
+
+          <!-- Add-ons & Pricing Modifiers (Decorator Pattern) -->
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+              <span style="font-weight:bold;font-size:0.95rem;">🎁 Optional Add-ons (Decorator Pattern)</span>
+              <button type="button" class="pattern-btn" onclick="window.SaveBite.openPattern('decorator')">🧩 Decorator</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.88rem;">
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                <input type="checkbox" id="checkout-giftwrap">
+                <span>Add Thermal Insulated Eco-Packaging (+₹25.00)</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                <input type="checkbox" id="checkout-priority">
+                <span>Priority Rush Counter Reservation (+₹15.00)</span>
+              </label>
+              <div style="display:flex;gap:0.5rem;margin-top:0.25rem;">
+                <input type="text" id="checkout-coupon" placeholder="Promo Coupon Code (e.g. SAVE15)" class="search-input" style="padding:0.4rem 0.6rem;font-size:0.85rem;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Simulation (Template Method Pattern) -->
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+              <span style="font-weight:bold;font-size:0.95rem;">💳 Payment Method (Template Method)</span>
+              <button type="button" class="pattern-btn" onclick="window.SaveBite.openPattern('templatemethod')">🧩 Template Method</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 2fr;gap:0.75rem;">
+              <select id="checkout-payment-method" style="padding:0.5rem;border-radius:6px;border:1px solid var(--border-color);">
+                <option value="UPI">UPI Instant</option>
+                <option value="CARD">Credit / Debit Card</option>
+                <option value="COD">Cash on Pickup</option>
+              </select>
+              <input type="text" id="checkout-payment-details" value="priya@okaxis" class="search-input" style="padding:0.5rem;" placeholder="VPA handle or Card Number">
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('checkout-modal').classList.remove('open')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="checkout-submit-btn">Confirm & Reserve Bite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       LOGIN / REGISTER MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content" style="max-width:440px;">
+      <div class="modal-header">
+        <h3 id="auth-modal-title" style="font-size:1.25rem;font-weight:800;">Sign in to SaveBite</h3>
+        <button type="button" class="btn btn-sm btn-secondary" id="auth-modal-close">✕</button>
+      </div>
+      <form id="auth-form">
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Email Address</label>
+            <input type="email" id="auth-email" value="customer@savebite.org" required class="search-input" style="padding:0.6rem;">
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:bold;">Password</label>
+            <input type="password" id="auth-password" value="customer123" required class="search-input" style="padding:0.6rem;">
+          </div>
+          <div id="register-fields" style="display:none;flex-direction:column;gap:1rem;">
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Full Name</label>
+              <input type="text" id="auth-name" class="search-input" style="padding:0.6rem;" placeholder="e.g. Priya Sharma">
+            </div>
+            <div>
+              <label style="font-size:0.85rem;font-weight:bold;">Account Role</label>
+              <select id="auth-role" style="width:100%;padding:0.6rem;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);">
+                <option value="CUSTOMER">Customer (Rescue food & collect)</option>
+                <option value="SELLER">Seller (Bakery/Restaurant owner)</option>
+                <option value="ADMIN">Platform Admin</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <input type="checkbox" id="auth-is-register">
+            <label for="auth-is-register" style="font-size:0.85rem;font-weight:600;cursor:pointer;">I need to create a new account</label>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted);background:var(--bg-secondary);padding:0.75rem;border-radius:6px;border:1px solid var(--border-color);">
+            <div style="font-weight:bold;margin-bottom:0.4rem;color:var(--text-primary);">⚡ 1-Click Demo Logins:</div>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="window.SaveBite.quickLogin('customer')">👤 Customer</button>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="window.SaveBite.quickLogin('seller')">🥖 Seller</button>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="window.SaveBite.quickLogin('admin')">🛡️ Admin</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="auth-submit-btn" style="width:100%;">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       CONTEXTUAL PATTERN POPUP MODAL (THE TEACHING EXPERIENCE)
+       ========================================== -->
+  <div class="modal-overlay" id="pattern-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <span class="badge" id="pattern-modal-category" style="background:#e0f2fe;color:#0369a1;margin-bottom:0.25rem;">Creational</span>
+          <h3 id="pattern-modal-title" style="font-size:1.4rem;font-weight:800;">Singleton Pattern</h3>
+          <p id="pattern-modal-intent" style="font-size:0.88rem;color:var(--text-secondary);margin-top:0.2rem;"></p>
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" id="pattern-modal-close">✕</button>
+      </div>
+
+      <!-- Popup Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="overview">1. Problem & Before/After</button>
+        <button class="modal-tab" data-tab="architecture">2. Architecture & Participants</button>
+        <button class="modal-tab" data-tab="code">3. Real Java Source Code</button>
+        <button class="modal-tab" data-tab="proof">4. Live Server Proof</button>
+        <button class="modal-tab" data-tab="viva">5. Viva Voce & Trade-offs</button>
+      </div>
+
+      <div class="modal-body" id="pattern-modal-tab-body"></div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.SaveBite.closePatternPopup()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       LIVE PATTERN TRACE DOCK (SSE STREAMING)
+       ========================================== -->
+  <aside class="trace-dock" id="trace-dock">
+    <div class="trace-header" id="trace-dock-header">
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span>⚡ Live GoF Pattern Trace</span>
+        <span class="badge" id="trace-counter" style="background:#16a34a;color:#fff;padding:1px 6px;">0</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <button class="btn btn-sm btn-secondary" id="trace-clear-btn" style="padding:0.2rem 0.5rem;font-size:0.75rem;">Clear</button>
+        <a class="btn btn-sm btn-secondary" href="/api/teaching/trace/export" target="_blank" style="padding:0.2rem 0.5rem;font-size:0.75rem;" download>Export .txt</a>
+        <span style="font-size:0.75rem;color:var(--text-muted);">▲ Toggle Dock</span>
+      </div>
+    </div>
+    <div class="trace-content" id="trace-rows-container"></div>
+  </aside>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
+
