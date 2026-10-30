@@ -1,0 +1,10 @@
+target/
+data/
+*.class
+*.log
+*.tmp
+.DS_Store
+.idea/
+*.iml
+.vscode/
+dependency-reduced-pom.xml
