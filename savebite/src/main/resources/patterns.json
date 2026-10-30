@@ -1,0 +1,461 @@
+[
+  {
+    "id": "singleton",
+    "name": "Singleton",
+    "category": "Creational",
+    "intent": "Ensure a class only has one instance, and provide a global point of access to it.",
+    "problemHere": "Application configuration, JWT signing secrets, and centralized logging must be initialized once and consistently shared across all HTTP handlers without leaking distinct state or reading files on every request.",
+    "withoutPattern": "// Naive approach: creating new Config/Key instances everywhere\npublic void handle(Context ctx) {\n    ConfigManager cfg = new ConfigManager(); // Re-reads disk every request!\n    SecretKey key = Keys.hmacShaKeyFor(cfg.getSecret().getBytes()); // Wasteful re-computation\n}",
+    "withPattern": "// GoF Singleton (Bill Pugh Initialization-on-demand Holder)\npublic class ConfigManager {\n    private static class Holder { private static final ConfigManager INSTANCE = new ConfigManager(); }\n    public static ConfigManager getInstance() { return Holder.INSTANCE; }\n}",
+    "screens": ["Global Header", "System Initialization", "Security Pipeline"],
+    "classes": ["ConfigManager", "AppLogger", "JwtKeyHolder"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/creational/singleton/ConfigManager.java",
+      "src/main/java/com/savebite/patterns/creational/singleton/AppLogger.java",
+      "src/main/java/com/savebite/patterns/creational/singleton/JwtKeyHolder.java"
+    ],
+    "vivaQuestion": "Why is the Bill Pugh holder idiom preferred over double-checked locking in Java?",
+    "vivaAnswer": "The Bill Pugh idiom relies on the JVM class-loading mechanism (JLS 12.4.2) for thread safety. The static inner class is only loaded when getInstance() is invoked, providing lazy initialization with zero synchronization overhead and no volatile CPU barriers.",
+    "tradeOff": "Introduces global state which can complicate unit testing (state bleeding between tests). Solved by providing isolated mock configurations in test fixtures.",
+    "proofEndpoint": "/api/teaching/proof/singleton"
+  },
+  {
+    "id": "factorymethod",
+    "name": "Factory Method",
+    "category": "Creational",
+    "intent": "Define an interface for creating an object, but let subclasses decide which class to instantiate.",
+    "problemHere": "SaveBite sends alerts through multiple distinct channels (In-app Toast, Email receipts, SMS alerts) and issues different token types (Access vs Refresh). Domain services should not know the concrete notification or token instantiation details.",
+    "withoutPattern": "// Hardcoded coupling to delivery channels\nif (type.equals(\"EMAIL\")) {\n    SmtpEmailNotification mail = new SmtpEmailNotification(\"smtp.host\", 587, creds);\n    mail.sendSmtp(...);\n} else if (type.equals(\"SMS\")) { ... }",
+    "withPattern": "// Factory Method pattern\nNotification notification = notificationFactory.createNotification(channel);\nnotification.send(recipient, message);",
+    "screens": ["Notification Center", "Checkout Screen", "Order Details"],
+    "classes": ["Notification", "ToastNotification", "EmailNotification", "SmsNotification", "NotificationFactory", "TokenFactory"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/creational/factorymethod/Notification.java",
+      "src/main/java/com/savebite/patterns/creational/factorymethod/ToastNotification.java",
+      "src/main/java/com/savebite/patterns/creational/factorymethod/NotificationFactory.java"
+    ],
+    "vivaQuestion": "What is the key difference between Factory Method and Simple Factory / Static Factory?",
+    "vivaAnswer": "Simple Factory uses a single class with a switch/conditional to instantiate products. Factory Method uses inheritance or interface polymorphism where subclasses or specialized creators override an abstract method to specify product creation, adhering to Open/Closed Principle.",
+    "tradeOff": "Requires creating a hierarchy of product and creator classes, which slightly increases overall class count for very simple object sets.",
+    "proofEndpoint": "/api/teaching/proof/factorymethod"
+  },
+  {
+    "id": "abstractfactory",
+    "name": "Abstract Factory",
+    "category": "Creational",
+    "intent": "Provide an interface for creating families of related or dependent objects without specifying their concrete classes.",
+    "problemHere": "Supporting Light and Dark UI themes requires that all components (Buttons, Cards, Inputs, Badges) share consistent colors, borders, and shadows without accidental cross-theme mixing.",
+    "withoutPattern": "// Scattered ternary checks across rendering code\nString btnBg = isDark ? \"#22c55e\" : \"#16a34a\";\nString cardBg = isDark ? \"#1e293b\" : \"#ffffff\";\n// Inevitably leads to mismatched light button inside dark container!",
+    "withPattern": "// Abstract Factory family creation\nThemeFactory factory = isDark ? new DarkThemeFactory() : new LightThemeFactory();\nButton btn = factory.createButton();\nCard card = factory.createCard();",
+    "screens": ["Theme Switcher", "Browse Catalog", "Dashboard"],
+    "classes": ["ThemeFactory", "LightThemeFactory", "DarkThemeFactory", "Button", "Card", "Input", "Badge"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/creational/abstractfactory/ThemeFactory.java",
+      "src/main/java/com/savebite/patterns/creational/abstractfactory/LightThemeFactory.java",
+      "src/main/java/com/savebite/patterns/creational/abstractfactory/DarkThemeFactory.java"
+    ],
+    "vivaQuestion": "How does Abstract Factory enforce consistency among products?",
+    "vivaAnswer": "By grouping product creation methods inside one factory interface (createButton, createCard, createBadge), concrete factories guarantee that all produced components belong to the exact same theme variant.",
+    "tradeOff": "Extending the abstract factory to support a new product type (e.g. adding createNavbar()) requires altering the ThemeFactory interface and every concrete factory implementation.",
+    "proofEndpoint": "/api/teaching/proof/abstractfactory"
+  },
+  {
+    "id": "builder",
+    "name": "Builder",
+    "category": "Creational",
+    "intent": "Separate the construction of a complex object from its representation so that the same construction process can create different representations.",
+    "problemHere": "Food listings and customer orders have dozens of attributes (some mandatory like title and seller, many optional like packaging, weights, promo codes, slots). Telescoping constructors are fragile and unreadable.",
+    "withoutPattern": "// Telescoping constructor hell\nnew Listing(id, null, null, \"Croissant\", null, \"bakery\", 100, 50, 4, null, \"FRESH\", null, 0.4, null);\n// High risk of swapping argument positions!",
+    "withPattern": "// Fluent Builder with validation\nListing listing = new ListingBuilder()\n    .withTitle(\"Artisan Sourdough\")\n    .withPricing(180, 90)\n    .withCategory(\"bakery\")\n    .build();",
+    "screens": ["Seller New Listing", "Checkout Review", "Admin User Management"],
+    "classes": ["ListingBuilder", "OrderBuilder", "JwtClaimsBuilder"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/creational/builder/ListingBuilder.java",
+      "src/main/java/com/savebite/patterns/creational/builder/OrderBuilder.java",
+      "src/main/java/com/savebite/patterns/creational/builder/JwtClaimsBuilder.java"
+    ],
+    "vivaQuestion": "Why is validation typically placed in build() rather than builder setters?",
+    "vivaAnswer": "Placing cross-field and invariant checks in build() ensures that the object is validated in its entirety once all parameters have been supplied, preventing transient invalid intermediate states while setters are chained.",
+    "tradeOff": "Requires writing boilerplate builder classes and duplicating domain fields, though modern IDEs or records can mitigate this.",
+    "proofEndpoint": "/api/teaching/proof/builder"
+  },
+  {
+    "id": "prototype",
+    "name": "Prototype",
+    "category": "Creational",
+    "intent": "Specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.",
+    "problemHere": "Sellers repeatedly create similar daily surplus batches (same photo, description, allergens, category), and customers frequently reorder favorite surplus bags. Rebuilding complex object graphs from scratch is slow and repetitive.",
+    "withoutPattern": "// Manual duplication of 15 fields and nested order items\nOrder newOrder = new Order();\nnewOrder.setCustomer(oldOrder.getCustomer());\nfor (OrderItem item : oldOrder.getItems()) { ... manual copy ... }",
+    "withPattern": "// Prototype deep clone with fresh ID and timestamp\nOrder reordered = reorderService.reorder(pastOrder);",
+    "screens": ["Customer Order History", "Seller Listing Cloner", "Reorder Confirmation"],
+    "classes": ["Prototype", "ListingPrototype", "OrderPrototype", "ReorderService"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/creational/prototype/Prototype.java",
+      "src/main/java/com/savebite/patterns/creational/prototype/OrderPrototype.java",
+      "src/main/java/com/savebite/patterns/creational/prototype/ReorderService.java"
+    ],
+    "vivaQuestion": "What is the difference between shallow copy and deep copy in Prototype?",
+    "vivaAnswer": "A shallow copy copies field values directly; if a field references an object (e.g. List<OrderItem>), both prototype and clone reference the same collection. A deep copy recursively duplicates child objects, ensuring mutations to the clone do not corrupt the original.",
+    "tradeOff": "Deep copying complex object graphs with circular references can be challenging and requires careful recursion or serialization handling.",
+    "proofEndpoint": "/api/teaching/proof/prototype"
+  },
+  {
+    "id": "adapter",
+    "name": "Adapter",
+    "category": "Structural",
+    "intent": "Convert the interface of a class into another interface clients expect. Adapter lets classes work together that couldn't otherwise because of incompatible interfaces.",
+    "problemHere": "SaveBite needs a standard AuthProvider interface, but third-party SDKs (Google Identity Services, GitHub OAuth) use completely incompatible method names, argument types, and user profile data models.",
+    "withoutPattern": "// Controller directly littered with vendor SDK specifics\nif (provider.equals(\"google\")) {\n    GoogleUser g = googleClient.verifyIdTokenAndFetchProfile(token);\n    email = g.email;\n} else if (provider.equals(\"github\")) {\n    GithubUser gh = githubClient.exchangeCodeForUser(token);\n    email = gh.userEmail;\n}",
+    "withPattern": "// Uniform Adapter interface\nAuthProvider provider = authProviders.get(\"google\");\nAuthResult result = provider.authenticate(token);",
+    "screens": ["Login Page", "Register Modal", "Account Linking"],
+    "classes": ["AuthProvider", "GoogleAuthAdapter", "GithubAuthAdapter", "GoogleOAuthClient", "GithubOAuthClient"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/adapter/AuthProvider.java",
+      "src/main/java/com/savebite/patterns/structural/adapter/GoogleAuthAdapter.java",
+      "src/main/java/com/savebite/patterns/structural/adapter/GithubAuthAdapter.java"
+    ],
+    "vivaQuestion": "How does Adapter differ from Facade and Decorator?",
+    "vivaAnswer": "Adapter converts an existing incompatible interface into a target interface without adding new behavior. Facade defines a new simplified interface over an entire subsystem. Decorator enhances an existing object while keeping the same interface.",
+    "tradeOff": "Introduces extra wrapper indirection. If the adaptee API changes radically, the adapter translation logic must be updated.",
+    "proofEndpoint": "/api/teaching/proof/adapter"
+  },
+  {
+    "id": "bridge",
+    "name": "Bridge",
+    "category": "Structural",
+    "intent": "Decouple an abstraction from its implementation so that the two can vary independently.",
+    "problemHere": "SaveBite generates multiple business reports (SalesReport, ImpactReport) across multiple output formats (CSV, HTML, PDF-like text). Inheritance creates an explosion of subclasses (SalesReportCSV, SalesReportPDF, ImpactReportCSV, etc.).",
+    "withoutPattern": "// Class explosion (M x N classes)\nclass SalesReportPdf extends SalesReport { ... }\nclass SalesReportCsv extends SalesReport { ... }\nclass ImpactReportPdf extends ImpactReport { ... }\nclass ImpactReportCsv extends ImpactReport { ... }",
+    "withPattern": "// Bridge: Abstraction (Report) holds Implementor (Exporter)\nReport report = new SalesReport(new CsvExporter(), sellerName);\nreport.setExporter(new HtmlExporter()); // Dynamically switch format!",
+    "screens": ["Seller Dashboard Reports", "Admin Platform Impact", "Data Export"],
+    "classes": ["Report", "SalesReport", "ImpactReport", "Exporter", "PdfExporter", "CsvExporter", "HtmlExporter"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/bridge/Report.java",
+      "src/main/java/com/savebite/patterns/structural/bridge/Exporter.java",
+      "src/main/java/com/savebite/patterns/structural/bridge/SalesReport.java"
+    ],
+    "vivaQuestion": "When should you prefer Bridge over simple inheritance or Strategy?",
+    "vivaAnswer": "Use Bridge when both the abstraction (what reports do) and the implementation (how data formats render) need to vary independently along orthogonal dimensions, preventing an M x N subclass explosion.",
+    "tradeOff": "Increases architectural complexity upfront by splitting a unified concept into two separate class hierarchies.",
+    "proofEndpoint": "/api/teaching/proof/bridge"
+  },
+  {
+    "id": "composite",
+    "name": "Composite",
+    "category": "Structural",
+    "intent": "Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly.",
+    "problemHere": "The marketplace catalog contains individual surplus items (ProductLeaf), multi-item 'Rescue Boxes' (Bundle), and whole departments (Category). Pricing and weight calculations should not care whether a node is a single item or a composite tree.",
+    "withoutPattern": "// Type checking and conditional traversal\nif (node instanceof Product) {\n    total += ((Product) node).getPrice();\n} else if (node instanceof Bundle) {\n    for (Product p : ((Bundle) node).getProducts()) total += p.getPrice();\n}",
+    "withPattern": "// Uniform treatment through CatalogNode interface\nCatalogNode node = getSelectedCatalogNode();\ndouble total = node.getPrice(); // Polymorphic recursion handled automatically!",
+    "screens": ["Catalog Tree Explorer", "Rescue Box Details", "Impact Calculator"],
+    "classes": ["CatalogNode", "Category", "Bundle", "ProductLeaf"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/composite/CatalogNode.java",
+      "src/main/java/com/savebite/patterns/structural/composite/Category.java",
+      "src/main/java/com/savebite/patterns/structural/composite/Bundle.java",
+      "src/main/java/com/savebite/patterns/structural/composite/ProductLeaf.java"
+    ],
+    "vivaQuestion": "How does Composite combine with the Visitor pattern in SaveBite?",
+    "vivaAnswer": "CatalogNode declares accept(CatalogVisitor visitor). When a visitor (like ImpactVisitor) visits a Category or Bundle composite, it recursively invokes accept on all child nodes, traversing the entire tree without modifying node implementations.",
+    "tradeOff": "Can make the design overly general: it is difficult to restrict child node types at compile time (e.g. preventing a Category from containing another specific subtype).",
+    "proofEndpoint": "/api/teaching/proof/composite"
+  },
+  {
+    "id": "decorator",
+    "name": "Decorator",
+    "category": "Structural",
+    "intent": "Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.",
+    "problemHere": "At checkout, customers can optionally add eco thermal packaging (+₹25), apply promo coupons (-15%), or select priority rush pickup (+₹15). Subclassing every combination results in combinatorial explosion.",
+    "withoutPattern": "// Rigid subclassing explosion\nclass BaseFoodPriceWithEcoWrapAndCoupon extends BaseFoodPrice { ... }\nclass BaseFoodPriceWithPriorityAndCoupon extends BaseFoodPrice { ... }",
+    "withPattern": "// Dynamic runtime wrapping\nPrice p = new BasePrice(100.0);\np = new GiftWrapDecorator(p);\np = new CouponDecorator(p, \"SAVE15\", 15.0);\ndouble finalTotal = p.getAmount();",
+    "screens": ["Cart Summary", "Checkout Add-ons", "Order Breakdown"],
+    "classes": ["Price", "BasePrice", "PriceDecorator", "GiftWrapDecorator", "CouponDecorator", "PickupPriorityDecorator", "LoggingServiceDecorator"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/decorator/Price.java",
+      "src/main/java/com/savebite/patterns/structural/decorator/PriceDecorator.java",
+      "src/main/java/com/savebite/patterns/structural/decorator/GiftWrapDecorator.java"
+    ],
+    "vivaQuestion": "How is Decorator different from Composite?",
+    "vivaAnswer": "Both rely on recursive composition, but Decorator has exactly one component reference (to wrap and add responsibility), whereas Composite has multiple child components (to aggregate a part-whole hierarchy).",
+    "tradeOff": "Results in many small objects in memory with deep call stacks that can be harder to debug if wrappers are misconfigured.",
+    "proofEndpoint": "/api/teaching/proof/decorator"
+  },
+  {
+    "id": "facade",
+    "name": "Facade",
+    "category": "Structural",
+    "intent": "Provide a unified interface to a set of interfaces in a subsystem. Facade defines a higher-level interface that makes the subsystem easier to use.",
+    "problemHere": "Checking out requires inventory locking, price decoration, payment processing, order building, inventory reduction, customer alert dispatch, and cart clearing. Exposing all these subsystems to the controller causes tight coupling and duplicate logic.",
+    "withoutPattern": "// Controller coordinates 7 subsystems directly with sprawling error handling\npublic void handleCheckout(...) {\n    inventoryService.lock(...);\n    discountService.apply(...);\n    paymentGateway.charge(...);\n    orderRepo.save(...);\n    notificationService.send(...);\n}",
+    "withPattern": "// Single atomic call to Facade\nCheckoutResponse resp = checkoutFacade.checkout(cart, history, request);",
+    "screens": ["Checkout Form", "Login Flow", "Order Processing"],
+    "classes": ["CheckoutFacade", "LoginFacade"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/facade/CheckoutFacade.java",
+      "src/main/java/com/savebite/patterns/structural/facade/LoginFacade.java"
+    ],
+    "vivaQuestion": "Does a Facade prevent clients from accessing subsystem classes directly?",
+    "vivaAnswer": "No, a GoF Facade does not encapsulate or hide subsystems strictly; advanced clients can still access internal classes directly if fine-grained control is necessary. It merely provides a convenient default.",
+    "tradeOff": "Can risk turning into a 'God Object' if too many responsibilities are heaped into a single facade class.",
+    "proofEndpoint": "/api/teaching/proof/facade"
+  },
+  {
+    "id": "flyweight",
+    "name": "Flyweight",
+    "category": "Structural",
+    "intent": "Use sharing to support large numbers of fine-grained objects efficiently.",
+    "problemHere": "Thousands of food cards render status badges (FRESH, 50% OFF, LAST CHANCE, VEGAN). Instantiating dedicated badge objects with repetitive icons, colors, and tooltips exhausts client and server memory.",
+    "withoutPattern": "// 1,000 cards create 1,000 separate duplicate Badge objects\nfor (Listing card : 1000Listings) {\n    Badge b = new Badge(\"FRESH\", \"🌱\", \"#dcfce7\", \"#166534\", \"Tooltip...\");\n    card.setBadge(b);\n}",
+    "withPattern": "// 1,000 cards share 6 intrinsic Flyweight instances\nBadgeFlyweight badge = BadgeFactory.getBadge(\"FRESH\");\nbadge.render(card.getId(), card.getIndex()); // Extrinsic state passed as arguments",
+    "screens": ["Catalog Card Grid", "Search Results", "Admin Inventory Table"],
+    "classes": ["BadgeFlyweight", "BadgeFactory"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/flyweight/BadgeFlyweight.java",
+      "src/main/java/com/savebite/patterns/structural/flyweight/BadgeFactory.java"
+    ],
+    "vivaQuestion": "What is the difference between intrinsic and extrinsic state in Flyweight?",
+    "vivaAnswer": "Intrinsic state is constant, immutable, and context-independent (e.g. badge color, label, icon) so it can be safely shared across instances. Extrinsic state is context-dependent (e.g. item position, card ID) and passed into methods at runtime.",
+    "tradeOff": "Code complexity increases because state must be partitioned between intrinsic and extrinsic, and flyweight lookups introduce minor CPU overhead.",
+    "proofEndpoint": "/api/teaching/proof/flyweight"
+  },
+  {
+    "id": "proxy",
+    "name": "Proxy",
+    "category": "Structural",
+    "intent": "Provide a surrogate or placeholder for another object to control access to it.",
+    "problemHere": "High read traffic on surplus listings causes repetitive disk I/O, and admin operations (deleting listings, changing roles) must be strictly protected against unauthorized invocation. CachingListingRepositoryProxy provides caching, while AdminServiceProxy enforces security guards.",
+    "withoutPattern": "// Direct DB calls on every browse query & manual role checks everywhere\npublic void delete(String userRole, String id) {\n    if (!userRole.equals(\"ADMIN\")) throw new RuntimeException();\n    realService.delete(id);\n}",
+    "withPattern": "// Proxy intercepts invocation for caching and security\nAdminService proxy = new AdminServiceProxy(realAdminService);\nproxy.deleteListing(currentUserRole, id); // RBAC checked & audited automatically!",
+    "screens": ["Browse Feed (Cache)", "Admin Console (Protection)", "Lazy Image Loaders"],
+    "classes": ["ListingRepository", "CachingListingRepositoryProxy", "AdminService", "RealAdminService", "AdminServiceProxy", "LazyImageProxy"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/structural/proxy/CachingListingRepositoryProxy.java",
+      "src/main/java/com/savebite/patterns/structural/proxy/AdminServiceProxy.java",
+      "src/main/java/com/savebite/patterns/structural/proxy/LazyImageProxy.java"
+    ],
+    "vivaQuestion": "Why do developers confuse Memento and Proxy, and how are they different?",
+    "vivaAnswer": "Developers confuse them because both wrap or manage another object. But their intents are completely distinct: Memento captures and externalizes internal state snapshots across time for undo/recovery. Proxy controls, intercepts, or lazily accesses the current object.",
+    "tradeOff": "Can mask underlying service latency or introduce cache invalidation bugs ('there are only two hard things in Computer Science...').",
+    "proofEndpoint": "/api/teaching/proof/proxy"
+  },
+  {
+    "id": "chainofresponsibility",
+    "name": "Chain of Responsibility",
+    "category": "Behavioral",
+    "intent": "Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it.",
+    "problemHere": "Incoming HTTP requests must undergo five consecutive security inspections: RequestId injection, RateLimit check, JWT validation, Token Blacklist check, and Role Authorization. Any failure must halt the request with an appropriate error status.",
+    "withoutPattern": "// Monolithic deeply nested if-statements inside every controller\nif (rateLimited(ip)) return 429;\nif (!validJwt(token)) return 401;\nif (isBlacklisted(jti)) return 401;\nif (!hasRole(role, \"ADMIN\")) return 403;",
+    "withPattern": "// Decoupled linear pipeline of handlers\nreqId.setNext(rateLimit).setNext(jwt).setNext(blacklist).setNext(role);\npipeline.execute(securityContext);",
+    "screens": ["Security Middleware", "Login Lockout Monitor", "API Gatekeeper"],
+    "classes": ["SecurityHandler", "RequestIdHandler", "RateLimitHandler", "JwtAuthenticationHandler", "BlacklistHandler", "RoleAuthorizationHandler", "SecurityPipeline"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/chainofresponsibility/SecurityHandler.java",
+      "src/main/java/com/savebite/patterns/behavioral/chainofresponsibility/RateLimitHandler.java",
+      "src/main/java/com/savebite/patterns/behavioral/chainofresponsibility/SecurityPipeline.java"
+    ],
+    "vivaQuestion": "What happens if no handler in the chain handles the request?",
+    "vivaAnswer": "The request falls off the end of the chain unhandled. In SaveBite, if all security handlers pass without terminating, the request successfully reaches the business controller with an authenticated SecurityContext.",
+    "tradeOff": "A request can traverse the entire chain without being handled, and debugging execution order issues requires good logging (solved here via our visual execution trace).",
+    "proofEndpoint": "/api/teaching/proof/chainofresponsibility"
+  },
+  {
+    "id": "command",
+    "name": "Command",
+    "category": "Behavioral",
+    "intent": "Encapsulate a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations.",
+    "problemHere": "Cart modifications (adding items, removing items, clearing cart) must support keyboard undo and redo (Ctrl+Z / Ctrl+Y) and UI reversal without tightly coupling the frontend buttons to the Cart internal data structures.",
+    "withoutPattern": "// Mutating cart directly without record of reverse actions\ncart.remove(item); // Oops, what was the previous quantity? Cannot undo!",
+    "withPattern": "// Encapsulated Command with undo contract\nCommand cmd = new AddToCartCommand(cart, item);\nhistory.execute(cmd);\nhistory.undo(); // Undoes exact delta seamlessly!",
+    "screens": ["Cart Drawer", "Undo / Redo Bar", "Listing Quick-Add"],
+    "classes": ["Command", "AddToCartCommand", "RemoveFromCartCommand", "ClearCartCommand", "CommandHistory", "Cart"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/command/Command.java",
+      "src/main/java/com/savebite/patterns/behavioral/command/AddToCartCommand.java",
+      "src/main/java/com/savebite/patterns/behavioral/command/CommandHistory.java"
+    ],
+    "vivaQuestion": "How does Command enable macro recording or transactional rollback?",
+    "vivaAnswer": "Because commands are self-contained objects storing both parameters and execution logic, they can be serialized, placed in a queue, logged in an audit trail, or undone in reverse order during a failure.",
+    "tradeOff": "Proliferation of individual command classes for every user interaction, increasing codebase size.",
+    "proofEndpoint": "/api/teaching/proof/command"
+  },
+  {
+    "id": "interpreter",
+    "name": "Interpreter",
+    "category": "Behavioral",
+    "intent": "Given a language, define a representation for its grammar along with an interpreter that uses the representation to interpret sentences in the language.",
+    "problemHere": "Shoppers require a powerful search mini-language (e.g. 'price<100 AND category:bakery OR expiry<=2h'). SQL concatenation is vulnerable to injection and cannot evaluate in-memory composite listings.",
+    "withoutPattern": "// Brittle regex matching or dangerous SQL concatenation\nString sql = \"SELECT * FROM listings WHERE \" + userRawQuery; // SQL Injection hazard!",
+    "withPattern": "// Abstract Syntax Tree representation\nParser parser = new Parser(\"price<100 AND category:bakery\");\nExpression ast = parser.parse();\nboolean matches = ast.interpret(listing);",
+    "screens": ["Search Bar", "Filter Modal", "AST Parse Tree Visualizer"],
+    "classes": ["Tokenizer", "Parser", "Expression", "ComparisonExpression", "AndExpression", "OrExpression"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/interpreter/Expression.java",
+      "src/main/java/com/savebite/patterns/behavioral/interpreter/ComparisonExpression.java",
+      "src/main/java/com/savebite/patterns/behavioral/interpreter/Parser.java"
+    ],
+    "vivaQuestion": "Why is the Interpreter pattern suitable only for simple grammars?",
+    "vivaAnswer": "For complex grammars, ASTs with thousands of rule classes become unwieldy and slow. Parser generators (like ANTLR or JavaCC) are better suited for full programming languages.",
+    "tradeOff": "High class count for representing grammar rules. Complex grammars become hard to maintain without automated grammar generators.",
+    "proofEndpoint": "/api/teaching/proof/interpreter"
+  },
+  {
+    "id": "iterator",
+    "name": "Iterator",
+    "category": "Behavioral",
+    "intent": "Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation.",
+    "problemHere": "Browsing catalog pages requires sequential chunking (pagination), while the homepage hero deals banner requires circular bidirectional stepping. Clients should not depend on whether data is stored in an ArrayList, linked list, or database cursor.",
+    "withoutPattern": "// Direct indexing exposing internal list structures\nfor (int i = page * 10; i < page * 10 + 10; i++) {\n    Listing l = list.get(i); // IndexOutOfBoundsException hazard!\n}",
+    "withPattern": "// Clean polymorphic iteration\nCustomIterator<List<Listing>> pages = aggregate.createPageIterator(6);\nwhile (pages.hasNext()) {\n    List<Listing> page = pages.next();\n}",
+    "screens": ["Browse Pagination Bar", "Hero Deals Carousel", "Order History Pager"],
+    "classes": ["CustomIterator", "ListingCollection", "ListingAggregate", "PaginatedListingIterator", "CarouselIterator"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/iterator/CustomIterator.java",
+      "src/main/java/com/savebite/patterns/behavioral/iterator/PaginatedListingIterator.java",
+      "src/main/java/com/savebite/patterns/behavioral/iterator/CarouselIterator.java"
+    ],
+    "vivaQuestion": "What is the difference between an Internal Iterator and an External Iterator?",
+    "vivaAnswer": "An External Iterator (used here) gives the client control over advancing traversal via next() and hasNext(). An Internal Iterator controls traversal internally (e.g. forEach(Consumer)) and applies a callback to each element.",
+    "tradeOff": "Can be overkill for simple lists that can be iterated using basic loops if pagination or circular stepping is not required.",
+    "proofEndpoint": "/api/teaching/proof/iterator"
+  },
+  {
+    "id": "mediator",
+    "name": "Mediator",
+    "category": "Behavioral",
+    "intent": "Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently.",
+    "problemHere": "Checkout has cascading form fields: Country -> State -> City -> Pickup Point Hub -> Pickup Slot -> Payment Method. Connecting each field directly to every other field creates an unmanageable O(N^2) web of event handlers.",
+    "withoutPattern": "// High coupling web\ncountrySelect.onchange = () => { stateSelect.update(); citySelect.update(); slotSelect.reset(); ... };\nstateSelect.onchange = () => { citySelect.update(); slotSelect.reset(); ... };",
+    "withPattern": "// Hub-and-spoke mediator coordination\nmediator.notify(countryField, \"valueChanged\");\n// Mediator centrally computes allowed states, cities, hubs, and active pickup slots!",
+    "screens": ["Checkout Details Form", "Pickup Slot Picker", "Address Selector"],
+    "classes": ["CheckoutMediator", "FormField", "CountryField", "StateField", "CityField", "PickupPointField", "SlotField", "PaymentField"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/mediator/CheckoutMediator.java",
+      "src/main/java/com/savebite/patterns/behavioral/mediator/FormField.java"
+    ],
+    "vivaQuestion": "How does Mediator compare to Observer?",
+    "vivaAnswer": "Observer facilitates one-to-many communication where the Subject does not know who is listening. Mediator encapsulates complex multi-party interactions between colleagues, centralizing coordination logic inside a single mediator.",
+    "tradeOff": "The mediator can evolve into a complex God Object containing intricate conditional rules if not organized cleanly.",
+    "proofEndpoint": "/api/teaching/proof/mediator"
+  },
+  {
+    "id": "memento",
+    "name": "Memento",
+    "category": "Behavioral",
+    "intent": "Without violating encapsulation, capture and externalize an object's internal state so that the object can be restored to this state later.",
+    "problemHere": "Users editing their profile, dietary preferences, and notification channels need draft auto-saving and instant restoration if changes are discarded, without exposing private entity fields.",
+    "withoutPattern": "// Exposing internal fields or clobbering live database state\nuser.setAddress(draftAddress);\n// If user clicks Cancel, the old state is already lost!",
+    "withPattern": "// Originator captures state in an immutable Memento\nProfileSnapshot memento = profileEditor.createSnapshot(\"Before address update\");\nhistory.push(memento);\nprofileEditor.restore(memento);",
+    "screens": ["User Profile Settings", "Draft Revisions Bar", "Dietary Preferences"],
+    "classes": ["ProfileEditor", "ProfileSnapshot", "SnapshotHistory"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/memento/ProfileEditor.java",
+      "src/main/java/com/savebite/patterns/behavioral/memento/ProfileSnapshot.java",
+      "src/main/java/com/savebite/patterns/behavioral/memento/SnapshotHistory.java"
+    ],
+    "vivaQuestion": "Why must the Memento object be immutable?",
+    "vivaAnswer": "Immutability guarantees that once a checkpoint snapshot is created and passed to the Caretaker, it cannot be tampered with or corrupted by external callers, ensuring a reliable state restoration.",
+    "tradeOff": "Storing many high-frequency snapshots of large domain objects can consume substantial memory if not pruned.",
+    "proofEndpoint": "/api/teaching/proof/memento"
+  },
+  {
+    "id": "observer",
+    "name": "Observer",
+    "category": "Behavioral",
+    "intent": "Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.",
+    "problemHere": "When food prices drop as expiry nears, multiple decoupled UI listeners must react simultaneously: the cart total must update, the customer price drop alert system must notify subscribed users, and the notification center must log an entry.",
+    "withoutPattern": "// Hardcoded direct calls in listing update service\nlisting.setPrice(newPrice);\ncartBadge.updateCount();\nalertService.sendSmsAlerts();\nnotificationCenter.addNotification();",
+    "withPattern": "// Loosely coupled pub-sub broadcast\npriceDropSubject.notifyObservers(\"PRICE_DROP\", priceDropEvent);",
+    "screens": ["Notification Center Tray", "Cart Badge", "Live Price Ticker"],
+    "classes": ["Observer", "Subject", "PriceDropSubject", "CartBadgeObserver", "PriceDropAlertObserver", "NotificationCenter"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/observer/Observer.java",
+      "src/main/java/com/savebite/patterns/behavioral/observer/Subject.java",
+      "src/main/java/com/savebite/patterns/behavioral/observer/PriceDropSubject.java"
+    ],
+    "vivaQuestion": "How do you avoid memory leaks with the Observer pattern in Java?",
+    "vivaAnswer": "Ensure observers are detached when no longer needed, or use WeakReferences for observer registrations so garbage collection is not blocked by lingering Subject references.",
+    "tradeOff": "Subscribers are notified in arbitrary order, and cascading updates between subjects can inadvertently trigger circular update loops if not guarded.",
+    "proofEndpoint": "/api/teaching/proof/observer"
+  },
+  {
+    "id": "state",
+    "name": "State",
+    "category": "Behavioral",
+    "intent": "Allow an object to alter its behavior when its internal state changes. The object will appear to change its class.",
+    "problemHere": "A surplus listing moves through distinct phases: FRESH -> DISCOUNTED -> LAST_CHANCE -> SOLD or EXPIRED. In FRESH state it allows booking at moderate price; in LAST_CHANCE it applies maximum discount; in SOLD or EXPIRED it strictly rejects any booking or re-pricing.",
+    "withoutPattern": "// Massive brittle switch statements across methods\npublic boolean canReserve() {\n    if (state.equals(\"FRESH\")) return true;\n    if (state.equals(\"SOLD\")) return false;\n    if (state.equals(\"EXPIRED\")) return false;\n    ...\n}",
+    "withPattern": "// Polymorphic state behavior\nListingContext context = new ListingContext(listing);\ncontext.applyDiscount(50.0); // State encapsulates valid transitions and rejections!",
+    "screens": ["Listing Details Page", "Seller Inventory Manager", "State Diagram Visualizer"],
+    "classes": ["ListingState", "FreshState", "DiscountedState", "LastChanceState", "SoldState", "ExpiredState", "ListingContext"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/state/ListingState.java",
+      "src/main/java/com/savebite/patterns/behavioral/state/ListingContext.java",
+      "src/main/java/com/savebite/patterns/behavioral/state/FreshState.java"
+    ],
+    "vivaQuestion": "Who should initiate state transitions: Context or ConcreteState?",
+    "vivaAnswer": "Both are valid depending on context. When transitions are dynamic and depend on state-specific conditions (like minutesRemaining < 120 transitioning from DiscountedState to LastChanceState), letting ConcreteState handle the transition decentralizes the state machine.",
+    "tradeOff": "Increases class count by requiring a separate class for each state, which is overkill for entities with only 2 trivial flags.",
+    "proofEndpoint": "/api/teaching/proof/state"
+  },
+  {
+    "id": "strategy",
+    "name": "Strategy",
+    "category": "Behavioral",
+    "intent": "Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it.",
+    "problemHere": "Sellers require diverse surplus pricing models: Expiry-Based dynamic discounting (steeper discount as hours tick down), Flat promotional markdown (e.g. 40% festival discount), or Bulk clearance discounting (higher discount for ordering 5+ units).",
+    "withoutPattern": "// Hardcoded if-else pricing branching\nif (strategyType.equals(\"EXPIRY\")) {\n    price = original * (minutesLeft < 60 ? 0.2 : 0.5);\n} else if (strategyType.equals(\"FLAT\")) {\n    price = original * 0.6;\n}",
+    "withPattern": "// Interchangeable algorithm family\nPricingContext ctx = new PricingContext(new ExpiryBasedDiscountStrategy());\ndouble price = ctx.calculatePrice(listing);\nctx.setStrategy(new FlatDiscountStrategy(50.0)); // Swapped at runtime!",
+    "screens": ["Product Pricing Badge", "Seller Discount Config", "Comparison Matrix"],
+    "classes": ["DiscountStrategy", "ExpiryBasedDiscountStrategy", "FlatDiscountStrategy", "BulkBuyDiscountStrategy", "PricingContext"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/strategy/DiscountStrategy.java",
+      "src/main/java/com/savebite/patterns/behavioral/strategy/ExpiryBasedDiscountStrategy.java",
+      "src/main/java/com/savebite/patterns/behavioral/strategy/PricingContext.java"
+    ],
+    "vivaQuestion": "How does Strategy differ from State?",
+    "vivaAnswer": "Both share similar UML class diagrams, but their intents differ. Strategy defines interchangeable algorithms configured by the client to solve a problem in different ways. State alters behavior automatically as the object's internal lifecycle changes.",
+    "tradeOff": "Clients must be aware of different strategies and understand how they differ to select the appropriate one.",
+    "proofEndpoint": "/api/teaching/proof/strategy"
+  },
+  {
+    "id": "templatemethod",
+    "name": "Template Method",
+    "category": "Behavioral",
+    "intent": "Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template Method lets subclasses redefine certain steps of an algorithm without changing the algorithm's structure.",
+    "problemHere": "Processing customer payments mandates an inviolable sequence: validateDetails() -> authorizeAmount() -> captureFunds() -> generateReceipt(). Individual payment methods (Card, UPI, COD) implement distinct checks, but the overall sequence must never be altered.",
+    "withoutPattern": "// Scattered payment routines with skipped steps\nvoid payCard() { authorize(); capture(); } // Forgot validation!\nvoid payUpi() { validate(); capture(); } // Inconsistent audit trail!",
+    "withPattern": "// Invariant skeleton enforced via final template method\npublic final PaymentResult processPayment(String orderId, double amount, String details) {\n    if (!validateDetails(details)) return fail;\n    String auth = authorizeAmount(orderId, amount);\n    captureFunds(orderId, amount, auth);\n    return generateReceipt(orderId, amount, auth);\n}",
+    "screens": ["Checkout Payment Gateway", "Payment Processing Receipt", "Transaction Audit"],
+    "classes": ["PaymentProcessor", "CardPayment", "UpiPayment", "CodPayment"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/templatemethod/PaymentProcessor.java",
+      "src/main/java/com/savebite/patterns/behavioral/templatemethod/CardPayment.java",
+      "src/main/java/com/savebite/patterns/behavioral/templatemethod/UpiPayment.java"
+    ],
+    "vivaQuestion": "What is the 'Hollywood Principle' in Template Method?",
+    "vivaAnswer": "'Don't call us, we'll call you.' The parent abstract class controls execution flow and calls subclass hook or primitive methods when needed, rather than subclasses controlling the algorithm.",
+    "tradeOff": "Inheritance-based coupling: altering the template method signature in the base class affects all derived payment processors.",
+    "proofEndpoint": "/api/teaching/proof/templatemethod"
+  },
+  {
+    "id": "visitor",
+    "name": "Visitor",
+    "category": "Behavioral",
+    "intent": "Represent an operation to be performed on the elements of an object structure. Visitor lets you define a new operation without changing the classes of the elements on which it operates.",
+    "problemHere": "We need to calculate global environmental impact (kg food rescued, rupees saved, CO2 avoided), GST tax brackets, and transport weight across heterogeneous catalog trees (ProductLeaf, Category, Bundle). Adding separate methods to all node classes violates Open/Closed Principle.",
+    "withoutPattern": "// Polluting node classes with every new platform metric\ninterface CatalogNode {\n    double getPrice();\n    double calculateCo2Avoided(); // Violates OCP!\n    double calculateGstTax();     // Violates OCP!\n    double calculateShippingWeight(); // Node class bloat!\n}",
+    "withPattern": "// Open for extension via Double Dispatch\nImpactVisitor impact = new ImpactVisitor();\ncatalogRoot.accept(impact);\ndouble co2Saved = impact.getTotalCo2AvoidedKg();",
+    "screens": ["Impact Dashboard", "Platform Eco Proof", "Admin Analytics"],
+    "classes": ["CatalogVisitor", "ImpactVisitor", "WeightVisitor", "TaxVisitor", "Visitable"],
+    "filePaths": [
+      "src/main/java/com/savebite/patterns/behavioral/visitor/CatalogVisitor.java",
+      "src/main/java/com/savebite/patterns/behavioral/visitor/ImpactVisitor.java",
+      "src/main/java/com/savebite/patterns/behavioral/visitor/WeightVisitor.java"
+    ],
+    "vivaQuestion": "What is 'Double Dispatch' and how does Visitor achieve it?",
+    "vivaAnswer": "Double dispatch means the executed operation depends on both the receiver type and the argument type. First, node.accept(visitor) dispatches on node type; second, inside accept, visitor.visit(this) dispatches on visitor type with 'this' as the specific concrete node class.",
+    "tradeOff": "Adding a new concrete element class (e.g. SubscriptionLeaf) requires updating the CatalogVisitor interface and every existing visitor implementation.",
+    "proofEndpoint": "/api/teaching/proof/visitor"
+  }
+]
+
