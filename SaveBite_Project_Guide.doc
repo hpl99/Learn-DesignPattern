@@ -1,0 +1,414 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>SaveBite - Detailed Project Manual and Guide</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1e293b;
+    margin: 2cm;
+  }
+  h1 {
+    font-size: 24pt;
+    color: #15803d;
+    border-bottom: 2pt solid #16a34a;
+    padding-bottom: 6pt;
+    margin-top: 18pt;
+    margin-bottom: 8pt;
+  }
+  h2 {
+    font-size: 16pt;
+    color: #0f172a;
+    border-bottom: 1pt solid #cbd5e1;
+    padding-bottom: 4pt;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+  }
+  h3 {
+    font-size: 13pt;
+    color: #166534;
+    margin-top: 12pt;
+    margin-bottom: 4pt;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 8pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12pt 0;
+    font-size: 10pt;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: bold;
+    border: 1pt solid #cbd5e1;
+    padding: 6pt 8pt;
+    text-align: left;
+  }
+  td {
+    border: 1pt solid #cbd5e1;
+    padding: 6pt 8pt;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    background-color: #f1f5f9;
+    color: #0369a1;
+    padding: 2pt 4pt;
+    border-radius: 3pt;
+  }
+  pre {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 10pt;
+    border-radius: 4pt;
+    font-family: 'Consolas', monospace;
+    font-size: 9.5pt;
+    line-height: 1.4;
+    overflow-x: auto;
+  }
+  .callout-box {
+    background-color: #f0fdf4;
+    border-left: 4pt solid #16a34a;
+    padding: 10pt 12pt;
+    margin: 10pt 0;
+  }
+  .warning-box {
+    background-color: #fef2f2;
+    border-left: 4pt solid #ef4444;
+    padding: 10pt 12pt;
+    margin: 10pt 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>🥗 SaveBite: Comprehensive Project Manual</h1>
+<p style="font-size: 12pt; color: #475569; font-weight: bold;">
+A Production-Style Surplus-Food Marketplace Demonstrating All 23 Gang of Four (GoF) Design Patterns
+</p>
+
+<div class="callout-box">
+  <b>Project Highlights:</b>
+  <ul>
+    <li><b>Technology Stack:</b> Java 17, Javalin 6.3.0, Embedded H2 in File Mode, Plain JDBC Repositories, JJWT 0.12.6, Server-Sent Events (SSE), Vanilla ES Modules.</li>
+    <li><b>Design Patterns Implemented:</b> All 23 GoF Patterns (5 Creational, 7 Structural, 11 Behavioral) fully mapped and verified.</li>
+    <li><b>Automated Tests:</b> 31 comprehensive tests passing (0 failures, 0 errors).</li>
+    <li><b>One-Command Execution:</b> <code>mvn clean package && java -jar target/savebite.jar</code> or double-click <code>run.bat</code>.</li>
+  </ul>
+</div>
+
+<h2>1. The Real-World Problems We Are Solving</h2>
+
+<h3>1.1 Problem 1: Commercial Food Waste at Closing Time</h3>
+<p>
+Local culinary businesses—including artisan bakeries, cafes, salad bars, and supermarket hot-food counters—prepare fresh inventory each morning. By evening closing time, significant quantities of edible, wholesome food remain unsold. Because these items cannot be offered as "freshly baked" tomorrow, businesses throw them into dumpsters. This amounts to <b>30% to 50% daily waste</b> for fresh culinary shops.
+</p>
+
+<h3>1.2 Problem 2: Consumer Food Inflation and Affordability</h3>
+<p>
+Simultaneously, university students, young professionals, and budget-conscious families face escalating food prices. While fresh food is being discarded miles away, consumers pay full retail prices for meals elsewhere. SaveBite bridges this gap by creating a hyper-local marketplace where near-expiry food is made available at steep markdowns (<b>30% to 70% off</b>).
+</p>
+
+<h3>1.3 Problem 3: Environmental Landfill Emissions</h3>
+<p>
+When organic food decomposes in anaerobic landfills, it generates methane (&nbsp;CH<sub>4</sub>&nbsp;), which is 28 times more potent than carbon dioxide at trapping heat in the atmosphere. Every kilogram of food rescued prevents approximately <b>2.5 kg of CO<sub>2</sub> equivalent emissions</b>. SaveBite tracks this impact live through an automated environmental dashboard.
+</p>
+
+<h3>1.4 Problem 4: Artificial Design Pattern Education</h3>
+<p>
+Design patterns are often taught in academia as abstract, detached exercises without commercial context. SaveBite grounds all 23 patterns in realistic marketplace challenges: <i>Command</i> for cart undo/redo, <i>Strategy</i> for dynamic markdowns, <i>Mediator</i> for cascading checkout forms, <i>Proxy</i> for protection and caching, and <i>Chain of Responsibility</i> for request security.
+</p>
+
+<h2>2. How Each Design Pattern Solves Marketplace Problems</h2>
+
+<table>
+  <tr>
+    <th>Pattern</th>
+    <th>Category</th>
+    <th>Specific Marketplace Problem Solved</th>
+    <th>Key Java Classes</th>
+  </tr>
+  <tr>
+    <td><b>Singleton</b></td>
+    <td>Creational</td>
+    <td>Ensures global database configuration, centralized logging, and HMAC-SHA256 JWT cryptographic signing keys are initialized once and thread-safely shared.</td>
+    <td><code>ConfigManager</code>, <code>JwtKeyHolder</code>, <code>AppLogger</code></td>
+  </tr>
+  <tr>
+    <td><b>Factory Method</b></td>
+    <td>Creational</td>
+    <td>Decouples order and reservation alert dispatching across Toast, SMS, and Email channels without hardcoding concrete notification classes.</td>
+    <td><code>NotificationFactory</code>, <code>ToastNotification</code></td>
+  </tr>
+  <tr>
+    <td><b>Abstract Factory</b></td>
+    <td>Creational</td>
+    <td>Generates coordinated component families (buttons, cards, badges, inputs) for Light and Dark accessibility themes.</td>
+    <td><code>ThemeFactory</code>, <code>LightThemeFactory</code>, <code>DarkThemeFactory</code></td>
+  </tr>
+  <tr>
+    <td><b>Builder</b></td>
+    <td>Creational</td>
+    <td>Eliminates telescoping constructors when assembling multi-attribute surplus listings and orders with optional delivery and gift packaging.</td>
+    <td><code>ListingBuilder</code>, <code>OrderBuilder</code>, <code>JwtClaimsBuilder</code></td>
+  </tr>
+  <tr>
+    <td><b>Prototype</b></td>
+    <td>Creational</td>
+    <td>Enables instant 1-click reordering of past weekly rescue baskets and cloning of repetitive daily bakery batch templates.</td>
+    <td><code>OrderPrototype</code>, <code>ListingPrototype</code>, <code>ReorderService</code></td>
+  </tr>
+  <tr>
+    <td><b>Adapter</b></td>
+    <td>Structural</td>
+    <td>Harmonizes incompatible Google and GitHub social OAuth token responses into a uniform internal <code>AuthProvider</code> interface.</td>
+    <td><code>AuthProvider</code>, <code>GoogleAuthAdapter</code>, <code>GithubAuthAdapter</code></td>
+  </tr>
+  <tr>
+    <td><b>Bridge</b></td>
+    <td>Structural</td>
+    <td>Prevents an M × N class explosion by separating report abstractions (Sales, Impact) from format exporters (CSV, HTML, ASCII PDF).</td>
+    <td><code>Report</code>, <code>SalesReport</code>, <code>Exporter</code>, <code>CsvExporter</code></td>
+  </tr>
+  <tr>
+    <td><b>Composite</b></td>
+    <td>Structural</td>
+    <td>Allows single surplus food items and multi-item "Mystery Rescue Boxes" to be treated uniformly in price, weight, and tax calculations.</td>
+    <td><code>CatalogNode</code>, <code>ProductLeaf</code>, <code>Bundle</code>, <code>Category</code></td>
+  </tr>
+  <tr>
+    <td><b>Decorator</b></td>
+    <td>Structural</td>
+    <td>Enables transparent, dynamic price layering (promo coupon discounts, thermal eco-wrap, priority rush fees) over base prices.</td>
+    <td><code>Price</code>, <code>BasePrice</code>, <code>CouponDecorator</code>, <code>GiftWrapDecorator</code></td>
+  </tr>
+  <tr>
+    <td><b>Facade</b></td>
+    <td>Structural</td>
+    <td>Simplifies complex multi-subsystem operations (e.g. checkout orchestrating stock checks, payments, order records, and receipts) behind a single call.</td>
+    <td><code>CheckoutFacade</code>, <code>LoginFacade</code></td>
+  </tr>
+  <tr>
+    <td><b>Flyweight</b></td>
+    <td>Structural</td>
+    <td>Conserves JVM memory by sharing immutable allergen and dietary badges (Vegan, Halal, Gluten-Free) across thousands of food cards.</td>
+    <td><code>BadgeFlyweight</code>, <code>BadgeFactory</code></td>
+  </tr>
+  <tr>
+    <td><b>Proxy</b></td>
+    <td>Structural</td>
+    <td>Enforces Role-Based Access Control (Protection Proxy), accelerates catalog queries (Caching Proxy), and defers food images (Virtual Proxy).</td>
+    <td><code>AdminServiceProxy</code>, <code>CachingListingRepositoryProxy</code></td>
+  </tr>
+  <tr>
+    <td><b>Chain of Resp.</b></td>
+    <td>Behavioral</td>
+    <td>Processes inbound HTTP requests through an ordered security pipeline: Request ID → Rate Limit → JWT Auth → Blacklist → Role Check.</td>
+    <td><code>SecurityPipeline</code>, <code>JwtAuthenticationHandler</code>, <code>BlacklistHandler</code></td>
+  </tr>
+  <tr>
+    <td><b>Command</b></td>
+    <td>Behavioral</td>
+    <td>Encapsulates cart additions, quantity changes, and removals into undoable command objects with keyboard shortcut support (Ctrl+Z / Ctrl+Y).</td>
+    <td><code>CommandHistory</code>, <code>AddToCartCommand</code>, <code>Cart</code></td>
+  </tr>
+  <tr>
+    <td><b>Interpreter</b></td>
+    <td>Behavioral</td>
+    <td>Parses and evaluates custom boolean search queries (e.g., <code>price&lt;100 AND category:bakery OR expiry&lt;=2h</code>) into an Abstract Syntax Tree.</td>
+    <td><code>Tokenizer</code>, <code>Parser</code>, <code>ComparisonExpression</code></td>
+  </tr>
+  <tr>
+    <td><b>Iterator</b></td>
+    <td>Behavioral</td>
+    <td>Encapsulates custom traversal strategies: windowed server-side pagination and infinite circular featured deals carousel.</td>
+    <td><code>CustomIterator</code>, <code>PaginatedListingIterator</code>, <code>CarouselIterator</code></td>
+  </tr>
+  <tr>
+    <td><b>Mediator</b></td>
+    <td>Behavioral</td>
+    <td>Eliminates direct N² couplings between cascading checkout form dropdowns (Country → State → City → Pickup Hub → Pickup Slot).</td>
+    <td><code>CheckoutMediator</code>, <code>FormField</code>, <code>CountryField</code></td>
+  </tr>
+  <tr>
+    <td><b>Memento</b></td>
+    <td>Behavioral</td>
+    <td>Provides draft autosaving and snapshot time-travel for user profile settings and seller listings without violating object encapsulation.</td>
+    <td><code>ProfileEditor</code>, <code>ProfileSnapshot</code>, <code>SnapshotHistory</code></td>
+  </tr>
+  <tr>
+    <td><b>Observer</b></td>
+    <td>Behavioral</td>
+    <td>Notifies cart count badges, price drop subscribers, and the live Server-Sent Events (SSE) telemetry console when prices change.</td>
+    <td><code>Subject</code>, <code>Observer</code>, <code>PriceDropSubject</code>, <code>CartBadgeObserver</code></td>
+  </tr>
+  <tr>
+    <td><b>State</b></td>
+    <td>Behavioral</td>
+    <td>Encapsulates surplus food lifecycle transitions (FRESH → DISCOUNTED → LAST_CHANCE → SOLD / EXPIRED) and dynamically modifies behaviors.</td>
+    <td><code>ListingContext</code>, <code>ListingState</code>, <code>FreshState</code>, <code>SoldState</code></td>
+  </tr>
+  <tr>
+    <td><b>Strategy</b></td>
+    <td>Behavioral</td>
+    <td>Enables interchangeable dynamic pricing algorithms: Expiry-Based Markdown, Flat Discount, and Bulk Buy Incentive.</td>
+    <td><code>DiscountStrategy</code>, <code>ExpiryBasedDiscountStrategy</code>, <code>PricingContext</code></td>
+  </tr>
+  <tr>
+    <td><b>Template Method</b></td>
+    <td>Behavioral</td>
+    <td>Standardizes the invariant 5-step payment processing sequence across Card, UPI Instant, and Cash on Pickup gateways.</td>
+    <td><code>PaymentProcessor</code>, <code>CardPayment</code>, <code>UpiPayment</code>, <code>CodPayment</code></td>
+  </tr>
+  <tr>
+    <td><b>Visitor</b></td>
+    <td>Behavioral</td>
+    <td>Traverses composite catalog trees to compute cumulative CO₂ reductions, total rescued kilograms, and applicable GST taxes.</td>
+    <td><code>CatalogVisitor</code>, <code>ImpactVisitor</code>, <code>WeightVisitor</code></td>
+  </tr>
+</table>
+
+<h2>3. Step-by-Step User Guide (How to Use SaveBite)</h2>
+
+<h3>3.1 Starting the Application</h3>
+<p>Open a terminal or command prompt in the project folder and run:</p>
+<pre>
+# Option 1: Direct Maven Command
+mvn clean package &amp;&amp; java -jar target/savebite.jar
+
+# Option 2: Windows Helper Scripts
+.\run.bat   (or .\run.ps1 in PowerShell)
+
+# Option 3: macOS / Linux
+chmod +x run.sh &amp;&amp; ./run.sh
+</pre>
+<p>Once started, open your web browser at <b>http://localhost:7070</b>.</p>
+
+<h3>3.2 Testing User Authentication &amp; 1-Click Demo Logins</h3>
+<p>SaveBite includes pre-seeded demo accounts with 1-click login buttons for rapid testing:</p>
+<ul>
+  <li>Click <b>"Login / Register"</b> in the top right navigation bar.</li>
+  <li>Under <b>⚡ 1-Click Demo Logins</b>, click:
+    <ul>
+      <li><b>👤 Customer:</b> <code>customer@savebite.org</code> / <code>customer123</code> (Customer role, browse, cart, checkout)</li>
+      <li><b>🥖 Seller:</b> <code>baker@savebite.org</code> / <code>baker123</code> (Bakery owner, list food, export reports)</li>
+      <li><b>🛡️ Admin:</b> <code>admin@savebite.org</code> / <code>admin123</code> (System admin, user roles, audit logs)</li>
+    </ul>
+  </li>
+  <li>To register a new user, check <b>"I need to create a new account"</b>, select your desired role, fill in your name, and click <b>Create Account</b>.</li>
+</ul>
+
+<h3>3.3 Browsing Surplus Food with the Search Mini-Language</h3>
+<ul>
+  <li>Click <b>"Browse Surplus"</b> in the header.</li>
+  <li>Test compound query parsing (Interpreter pattern) by typing:
+    <br><code>price&lt;100 AND category:bakery</code> or <code>expiry&lt;=2h</code> or <code>category:dairy OR category:prepared</code>
+  </li>
+  <li>Click <b>Search</b> or press <b>Enter</b> to see matching near-expiry items.</li>
+  <li>Click category pills (Bakery, Dairy, Prepared Meals) to filter catalog branches (Composite pattern).</li>
+  <li>Change the <b>Sort</b> dropdown (Expiry Soonest, Price Low-to-High) to see the Strategy pattern in action.</li>
+</ul>
+
+<h3>3.4 Cart Operations with Instant Undo and Redo</h3>
+<ul>
+  <li>Click <b>"Reserve Bite"</b> on any food card.</li>
+  <li>Click <b>🛒 Cart</b> to open the slide-out drawer.</li>
+  <li>Modify quantities using <b>+</b> and <b>−</b>.</li>
+  <li>Click <b>"↩ Undo"</b> (or press <b>Ctrl+Z</b>) to undo your last action.</li>
+  <li>Click <b>"↪ Redo"</b> (or press <b>Ctrl+Y</b>) to restore it.</li>
+  <li>Click <b>"Proceed to Checkout"</b>.</li>
+</ul>
+
+<h3>3.5 Cascading Checkout &amp; Payment Simulation</h3>
+<ul>
+  <li>Notice the cascading address fields (Mediator pattern): Selecting Country enables State, which populates Cities and local Pickup Hubs.</li>
+  <li>Toggle <b>"Thermal Insulated Eco-Packaging"</b> (+₹25.00) or <b>"Priority Rush Reservation"</b> (+₹15.00) to see dynamic price decoration (Decorator pattern).</li>
+  <li>Enter coupon code <code>SAVE15</code> for 15% discount.</li>
+  <li>Choose payment method: <b>UPI Instant</b>, <b>Credit/Debit Card</b>, or <b>Cash on Pickup</b> (Template Method pattern).</li>
+  <li>Click <b>"Confirm &amp; Reserve Bite"</b> to generate the order and receipt.</li>
+</ul>
+
+<h3>3.6 1-Click Order Reordering (Prototype Pattern)</h3>
+<ul>
+  <li>Click <b>"My Orders"</b> in the navigation bar.</li>
+  <li>Find your completed order and click <b>"🔄 Reorder (Prototype)"</b>.</li>
+  <li>The system clones the previous order structure, creating a fresh order with a new timestamp and ID without re-entering items.</li>
+</ul>
+
+<h3>3.7 Seller Operations &amp; Multi-Format Reports</h3>
+<ul>
+  <li>Log in as <b>Seller</b> (<code>baker@savebite.org</code>).</li>
+  <li>Click <b>"Seller Hub"</b>.</li>
+  <li>Fill in the <b>"List Today's Near-Expiry Surplus Food"</b> form and click <b>Construct Listing with Builder</b>.</li>
+  <li>Export sales reports by clicking <b>View HTML</b>, <b>Download CSV</b>, or <b>View ASCII PDF</b> (Bridge pattern).</li>
+  <li>Click <b>"📋 Clone Template"</b> on existing items to duplicate daily bakery batches (Prototype pattern).</li>
+</ul>
+
+<h3>3.8 Profile Autosave Checkpoints (Memento Pattern)</h3>
+<ul>
+  <li>Click <b>"Profile"</b> in the navigation bar.</li>
+  <li>Update your contact address or dietary preference.</li>
+  <li>Click <b>"📸 Save Checkpoint"</b> to record a manual snapshot.</li>
+  <li>Make modifications, then click <b>"↩ Restore"</b> on any snapshot in the Caretaker history to time-travel back to that state.</li>
+</ul>
+
+<h3>3.9 Admin Protection Proxy Demonstration</h3>
+<ul>
+  <li>While logged in as Customer, attempt to access the <b>Admin</b> page.</li>
+  <li>The <b>Protection Proxy</b> intercepts the request and safely displays a <b>403 Forbidden</b> notice.</li>
+  <li>Click <b>Switch to Admin Account</b> to log in as Admin and view the full user accounts table and role management options.</li>
+</ul>
+
+<h2>4. The Educational Features</h2>
+
+<h3>4.1 Contextual Pattern Popups</h3>
+<p>
+Clicking any <b>"💡 How does a design pattern solve this?"</b> button across the site opens an interactive modal with 5 tabs:
+</p>
+<ol>
+  <li><b>Problem &amp; Before/After:</b> Real-world difficulty and side-by-side code comparison.</li>
+  <li><b>Architecture &amp; Participants:</b> Official GoF roles mapped to SaveBite Java classes.</li>
+  <li><b>Real Java Source Code:</b> Live disk reader showing syntax-highlighted backend code.</li>
+  <li><b>Live Server Proof:</b> Actual runtime verification data fetched directly from the JVM.</li>
+  <li><b>Viva Voce &amp; Trade-offs:</b> Oral exam questions, model answers, and architectural trade-offs.</li>
+</ol>
+
+<h3>4.2 Live Pattern Trace Console</h3>
+<p>
+Click the <b>⚡ Live GoF Pattern Trace</b> bar at the bottom right of the screen. Using Server-Sent Events (SSE), this console streams real-time logs of every pattern invoked across the backend (timestamp, pattern, class, method, message). Traces can be filtered or exported as a <code>.txt</code> file.
+</p>
+
+<h3>4.3 Global Teaching Mode Switch</h3>
+<p>
+Toggle <b>Teaching Mode</b> in the header:
+</p>
+<ul>
+  <li><b>ON (Default):</b> Educational buttons, inline hints, and trace listeners are active.</li>
+  <li><b>OFF:</b> Hides educational chips to provide a standard e-commerce user experience.</li>
+</ul>
+
+<h2>5. Summary</h2>
+<p>
+SaveBite demonstrates that software design patterns are practical engineering tools that create modular, testable, and maintainable systems. By combining a real-world surplus-food marketplace with in-context education, SaveBite delivers a complete, runnable solution that saves food, money, and emissions while training the next generation of software architects.
+</p>
+
+</body>
+</html>
