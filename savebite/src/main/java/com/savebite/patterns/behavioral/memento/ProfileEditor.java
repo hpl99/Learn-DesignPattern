@@ -39,7 +39,7 @@ public class ProfileEditor {
 
         PatternTracer.getInstance().record(
             "Memento",
-            "ProfileEditor",
+            "ProfileEditor", 
             "createSnapshot",
             "Captured Memento snapshot [" + snapshot.getId() + "] for '" + fullName + "' (" + reason + ")"
         );

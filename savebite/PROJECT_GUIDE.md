@@ -215,3 +215,4 @@ mvn test
 2. **Ecological:** Reduces landfill methane by preventing organic waste accumulation ($2.5\text{ kg CO}_2\text{e}$ per kg saved).
 3. **Architectural:** Demonstrates clean separation of concerns, loose coupling, open-closed principle, and single responsibility across all 23 GoF patterns.
 4. **Educational:** Provides students, teachers, and developers with an interactive, living reference for software design patterns in modern Java.
+
