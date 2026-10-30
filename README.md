@@ -46,9 +46,6 @@ SaveBite creates a hyper-local marketplace connecting food sellers and conscious
 
 ### Option A: One-Command Maven Build & Run
 ```bash
-# Clone or navigate into the savebite project directory
-cd savebite
-
 # Clean, package fat uber-jar, and start server
 mvn clean package && java -jar target/savebite.jar
 ```
